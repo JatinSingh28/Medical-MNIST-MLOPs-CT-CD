@@ -1,54 +1,67 @@
 import streamlit as st
 from PIL import Image
-
-# import torch
+import torch
 import torchvision.transforms as transforms
 from aws_controls import AwsControl
 from config import config
-
-# from model import ResNetModel  # Assuming you have defined your model in a separate file named model.py
-
-# Load the model
-# model = ResNetModel()
-# Load the weights
-# model.load_state_dict(torch.load("path_to_your_trained_model_weights.pth"))
-# model.eval()
-
-# Define transformation for the input image
-transform = transforms.Compose(
-    [
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-    ]
-)
+from ResNet.ResNet import ResNetModel
 
 
 # Define a function to make predictions
 def predict(image):
-    # Apply transformations
+    class_dict = {
+        0: "AbdomenCT",
+        1: "BreastMRI",
+        2: "ChestCT",
+        3: "CXR",
+        4: "Hand",
+        5: "HeadCT",
+    }
     image_tensor = transform(image).unsqueeze(0)  # Add batch dimension
     # Perform prediction
-    # with torch.no_grad():
-    # outputs = model(image_tensor)
-    # _, predicted = torch.max(outputs, 1)
-    # return predicted.item()
-    return image_tensor
+    with torch.no_grad():
+        outputs = model(image_tensor)
+        _, predicted = torch.max(outputs, 1)
+        return class_dict[predicted.item()]
 
 
 # Streamlit app
 def main():
+    if "prediction" not in st.session_state:
+        st.session_state["prediction"] = None
+        st.session_state["uploaded"] = False
+
     st.title("Image Classification")
+
+    # with st.expander("Download sample images"):
+
+    #     st.download_button(
+    #         "Download",
+    #         data=sample_imgs,
+    #         file_name="sample_imgs.zip",
+    #         mime="application/zip",
+    #     )
     uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+
+    if uploaded_image is None:
+        st.session_state["prediction"] = None
+        st.session_state["uploaded"] = False
 
     if uploaded_image is not None:
         image = Image.open(uploaded_image)
-        image.save("uploaded_img.jpg")
+        image.save("uploaded_img.jpeg")
         st.image(image, caption="Uploaded Image", use_column_width=True)
+
         if st.button("Classify"):
-            prediction = predict(image)
-            st.write(f"Prediction: Class {prediction}")
+            st.session_state["prediction"] = predict(image)
+            prediction = st.session_state["prediction"]
+            st.success(f"Prediction Class: {prediction}")
+
+        # st.session_state
+        if st.session_state["prediction"] is not None:
             options = ["YES", "NO"]
-            selected_option = st.selectbox("Is the prediction correct?", options)
+            st.write("Select NO for queuing image for retraining")
+            selected_option = st.radio("Is the prediction correct?", options)
             if selected_option == "NO":
                 classes = [
                     "AbdomenCT",
@@ -60,9 +73,28 @@ def main():
                 ]  # Define your classes
                 corrected_class = st.selectbox("Select Correct Class", classes)
                 if st.button("Submit"):
-                    st.write(f"Corrected Class: {corrected_class}")
+                    if not st.session_state["uploaded"]:
+                        aws.upload_image("uploaded_img.jpeg", corrected_class)
+                        st.success(
+                            f"Image and corrected class {corrected_class} uploaded to AWS for retraining"
+                        )
+                        st.session_state["uploaded"] = True
+                    else:
+                        st.warning("Image already uploaded for retraining")
+                
 
 
 if __name__ == "__main__":
     aws = AwsControl(config["aws_key"], config["aws_secret"])
+    model = ResNetModel()
+    model.load_state_dict(torch.load("./ResNet/model_ckpt/last.ckpt")["state_dict"])
+    model.eval()
+
+    # Define transformation for the input image
+    transform = transforms.Compose(
+        [
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+        ]
+    )
     main()

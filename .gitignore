@@ -3,3 +3,6 @@ config.py
 data
 __pycache__
 .env
+Jatin-Medical-MNIST_credentials.csv
+wvenv
+lightning_logs
