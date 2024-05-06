@@ -6,7 +6,6 @@ import torchvision.models as models
 from torch.utils.data import DataLoader
 import mlflow
 
-
 class ResNetModel(pl.LightningModule):
     def __init__(self, num_classes=6):
         super(ResNetModel, self).__init__()

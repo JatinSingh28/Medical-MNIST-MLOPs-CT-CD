@@ -3,8 +3,6 @@ from PIL import Image
 import torch
 import torchvision.transforms as transforms
 from aws_controls import AwsControl
-from config import config
-from ResNetDir import ResNet
 import mlflow
 from mlflow import MlflowClient
 import dagshub
@@ -40,7 +38,6 @@ def main():
         st.session_state["prediction"] = None
         st.session_state["uploaded"] = False
 
-    model = None
     if "loaded" not in st.session_state:
         if 'aws' not in st.session_state:
             st.session_state['aws'] = AwsControl(st.secrets["aws_key"], st.secrets["aws_secret"])
