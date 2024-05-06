@@ -16,7 +16,7 @@ from ResNetDir.initial_train import DataModule
 
 def continious_train():
     load_dotenv()
-    dagshub.init("Medical-Image-Classification", "JatinSingh28", mlflow=True)
+    dagshub.init("Medical-MNIST-MLOPs-CT-CD", "JatinSingh28", mlflow=True)
     mlflow.start_run()
     mlflow.autolog()
 

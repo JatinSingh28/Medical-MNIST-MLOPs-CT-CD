@@ -4,5 +4,7 @@ data
 __pycache__
 .env
 Jatin-Medical-MNIST_credentials.csv
+AWS_data
 wvenv
 lightning_logs
+.streamlit

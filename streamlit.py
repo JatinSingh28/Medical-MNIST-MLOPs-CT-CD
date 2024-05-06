@@ -4,7 +4,10 @@ import torch
 import torchvision.transforms as transforms
 from aws_controls import AwsControl
 from config import config
-from ResNet.ResNet import ResNetModel
+from ResNetDir import ResNet
+import mlflow
+from mlflow import MlflowClient
+import dagshub
 
 
 # Define a function to make predictions
@@ -17,10 +20,16 @@ def predict(image):
         4: "Hand",
         5: "HeadCT",
     }
+    transform = transforms.Compose(
+        [
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+        ]
+    )
     image_tensor = transform(image).unsqueeze(0)  # Add batch dimension
     # Perform prediction
     with torch.no_grad():
-        outputs = model(image_tensor)
+        outputs = st.session_state["model"](image_tensor)
         _, predicted = torch.max(outputs, 1)
         return class_dict[predicted.item()]
 
@@ -30,6 +39,26 @@ def main():
     if "prediction" not in st.session_state:
         st.session_state["prediction"] = None
         st.session_state["uploaded"] = False
+
+    model = None
+    if "loaded" not in st.session_state:
+        if 'aws' not in st.session_state:
+            st.session_state['aws'] = AwsControl(st.secrets["aws_key"], st.secrets["aws_secret"])
+        dagshub.init("Medical-MNIST-MLOPs-CT-CD", "JatinSingh28", mlflow=True)
+        client = MlflowClient()
+        registered_model_name = "Production Model V1"
+        version = client.get_model_version_by_alias(
+            registered_model_name, "prod"
+        ).version
+
+        model_uri = f"models:/{registered_model_name}/{version}"
+
+        if "model" not in st.session_state:
+            st.session_state["model"] = mlflow.pytorch.load_model(model_uri)
+            
+        # model.load_state_dict(torch.load("./ResNet/model_ckpt/last-v4.ckpt")["state_dict"])
+        st.session_state["model"].eval()
+        st.session_state["loaded"] = True
 
     st.title("Image Classification")
 
@@ -74,27 +103,15 @@ def main():
                 corrected_class = st.selectbox("Select Correct Class", classes)
                 if st.button("Submit"):
                     if not st.session_state["uploaded"]:
-                        aws.upload_image("uploaded_img.jpeg", corrected_class)
+                        st.session_state['aws'].upload_image("uploaded_img.jpeg", corrected_class)
                         st.success(
                             f"Image and corrected class {corrected_class} uploaded to AWS for retraining"
                         )
                         st.session_state["uploaded"] = True
                     else:
                         st.warning("Image already uploaded for retraining")
-                
 
 
 if __name__ == "__main__":
-    aws = AwsControl(config["aws_key"], config["aws_secret"])
-    model = ResNetModel()
-    model.load_state_dict(torch.load("./ResNet/model_ckpt/last.ckpt")["state_dict"])
-    model.eval()
-
-    # Define transformation for the input image
-    transform = transforms.Compose(
-        [
-            transforms.Resize((64, 64)),
-            transforms.ToTensor(),
-        ]
-    )
+    # aws = AwsControl(config["aws_key"], config["aws_secret"])
     main()

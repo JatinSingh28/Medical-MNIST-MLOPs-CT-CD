@@ -58,7 +58,7 @@ class DataModule(pl.LightningDataModule):
 
 if __name__ == "__main__":
     load_dotenv()
-    dagshub.init("Medical-Image-Classification", "JatinSingh28", mlflow=True)
+    dagshub.init("Medical-MNIST-MLOPs-CT-CD", "JatinSingh28", mlflow=True)
     mlflow.start_run()
     mlflow.autolog()
 
