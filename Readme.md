@@ -1,11 +1,11 @@
-# Project Name: Medical MNIST Image Classification with MLFlow, Streamlit, Airflow, and AWS S3
+# Continuous Training and Deployment Pipeline for Medical MNIST Image Classification with Airflow & MLflow
 
 ## Description:
-This project is designed to facilitate the classification of medical MNIST images using machine learning models. It employs a Streamlit frontend for user interaction, MLFlow for model management and experiment tracking, Airflow for automated data fetching, model retraining, and AWS S3 for storage of images.
+This project embodies a resilient pipeline harmonizing continuous training and deployment principles, guided by MLOps methodologies. Leveraging a Streamlit frontend, users seamlessly upload medical MNIST images, eliciting real-time predictions derived from MLFlow model registry models. Additionally, an error correction mechanism empowers users to rectify misclassifications, fostering model refinement. Orchestrated by an Airflow DAG, the pipeline automates weekly data retrieval from AWS S3 and updates the MLFlow model registry with retrained models, manifesting an iterative approach to model improvement and deployment. Furthermore, the project operates seamlessly on AWS EC2 instances, ensuring scalability and reliability.
 
 ## Pipeline Architecture:
 
-![Pipeline Architecture](image_url)
+![Pipeline Architecture](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/Pipeline_architecture.png)
 
 1. **User Interaction:**
    - The pipeline begins with a Streamlit frontend, providing users with an intuitive interface to upload medical MNIST images for classification.
@@ -40,6 +40,23 @@ This project is designed to facilitate the classification of medical MNIST image
 2. **MLFlow Model Registry:** Stores trained models and facilitates model deployment.
 3. **Airflow DAG:** Automates data fetching, model retraining, and model deployment.
 4. **AWS S3:** Stores images with corrected labels for future use.
+
+## MLflow Experiment Tracking
+![MLflow Exp tracking](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/mlflow_exp_tracking.png)
+
+![MLflow Dags Hub](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/mlflow_dagshub.png)
+
+## MLflow Model Registry
+![MLflow models](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/mlflow_models.png)
+![MLflow modle versions](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/mlflow_model_versions.png)
+
+## Airflow
+![Ariflow UI](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/ariflow_dag.png)
+
+## Streamlit Frontend
+[Streamlit](https://medical-mnist.streamlit.app/)
+![Streamlit UI 1](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/streamlit_frontend_2.png)
+![Streamlit UI 2](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/streamlit_frontend_3.png)
 
 ## Setup Instructions:
 1. Clone the repository from GitHub.
@@ -82,21 +99,5 @@ These configurations are necessary for proper functioning of the project.
 4. The Airflow DAG will automatically fetch new data and retrain the model weekly.
 5. Corrected images are stored in AWS S3 for future analysis.
 
-## Contributing:
-1. Fork the repository on GitHub.
-2. Make necessary changes and improvements.
-3. Create a pull request with detailed information about the changes.
-4. Contributions will be reviewed and merged if deemed appropriate.
-
 ## Authors:
-[List of project contributors]
-
-## License:
-This project is licensed under the [License Name] license. See the LICENSE.md file for details.
-
-## Acknowledgements:
-1. Mention any libraries, frameworks, or tools used in the project.
-2. Acknowledge any individuals or organizations whose work or contributions influenced the project.
-
-## Contact:
-For inquiries or support, please contact [email address].
+This data pipeline is brought to you by [Jatin Singh Sagoi](https://www.linkedin.com/in/jatinsingh28/). If you have questions, suggestions, or feedback, please don't hesitate to reach out at contact.sagoisinghjatin9951@gmail.com.
