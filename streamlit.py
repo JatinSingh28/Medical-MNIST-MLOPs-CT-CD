@@ -39,8 +39,10 @@ def main():
         st.session_state["uploaded"] = False
 
     if "loaded" not in st.session_state:
-        if 'aws' not in st.session_state:
-            st.session_state['aws'] = AwsControl(st.secrets["aws_key"], st.secrets["aws_secret"])
+        if "aws" not in st.session_state:
+            st.session_state["aws"] = AwsControl(
+                st.secrets["aws_key"], st.secrets["aws_secret"]
+            )
         dagshub.init("Medical-MNIST-MLOPs-CT-CD", "JatinSingh28", mlflow=True)
         client = MlflowClient()
         registered_model_name = "Production Model V1"
@@ -52,12 +54,12 @@ def main():
 
         if "model" not in st.session_state:
             st.session_state["model"] = mlflow.pytorch.load_model(model_uri)
-            
+
         # model.load_state_dict(torch.load("./ResNet/model_ckpt/last-v4.ckpt")["state_dict"])
         st.session_state["model"].eval()
         st.session_state["loaded"] = True
 
-    st.title("Image Classification")
+    st.title("Medical MNIST")
 
     # with st.expander("Download sample images"):
 
@@ -100,7 +102,9 @@ def main():
                 corrected_class = st.selectbox("Select Correct Class", classes)
                 if st.button("Submit"):
                     if not st.session_state["uploaded"]:
-                        st.session_state['aws'].upload_image("uploaded_img.jpeg", corrected_class)
+                        st.session_state["aws"].upload_image(
+                            "uploaded_img.jpeg", corrected_class
+                        )
                         st.success(
                             f"Image and corrected class {corrected_class} uploaded to AWS for retraining"
                         )
@@ -110,5 +114,8 @@ def main():
 
 
 if __name__ == "__main__":
-    # aws = AwsControl(config["aws_key"], config["aws_secret"])
+    st.set_page_config(
+        page_title="Medical MNIST",
+        page_icon="🧠",
+    )
     main()
