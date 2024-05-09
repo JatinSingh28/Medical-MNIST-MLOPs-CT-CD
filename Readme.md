@@ -56,7 +56,10 @@ This project embodies a resilient pipeline harmonizing continuous training and d
 ## 🪄Streamlit Frontend
 [Streamlit](https://medical-mnist.streamlit.app/)
 ![Streamlit UI 1](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/streamlit_frontend_2.png)
-![Streamlit UI 2](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/streamlit_frontend_3.png)
+![Streamlit UI 2](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/streamlit_frontend_3.png)\
+
+## 🪣AWS
+![AWS S3 Bucket](https://github.com/JatinSingh28/Medical-MNIST-MLOPs-CT-CD/blob/master/img/aws_bucket.png)
 
 ## 🔨Setup Instructions:
 1. Clone the repository from GitHub.
